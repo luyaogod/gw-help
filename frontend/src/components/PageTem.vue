@@ -21,7 +21,7 @@
     </v-sheet>
 
     <!-- 主要内容区域 -->
-    <v-sheet height="calc(100% - 48px)">
+    <v-sheet height="calc(100% - 56px)">
       <slot name="page-content" />
     </v-sheet>
   </v-sheet>

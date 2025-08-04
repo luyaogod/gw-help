@@ -33,10 +33,8 @@
       permanent
       :width="drwawerWidth"
     >
-      <v-list density="compact" nav>
-        <v-list-item title="Viso转换" to="/" value="1" />
-        <v-list-item title="JSON5" to="/page2" value="2" />
-      </v-list>
+      <!-- 目录 -->
+      <Menu />
     </v-navigation-drawer>
 
     <v-main>

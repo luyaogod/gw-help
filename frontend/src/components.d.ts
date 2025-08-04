@@ -8,9 +8,18 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    1: typeof import('./components/1.vue')['default']
+    CodeEditor: typeof import('./components/CodeEditor.vue')['default']
+    CodeMirror: typeof import('./components/CodeMirror.vue')['default']
+    CodeMirrorEditor: typeof import('./components/CodeMirrorEditor.vue')['default']
+    CodeMirrorMark: typeof import('./components/CodeMirrorMark.vue')['default']
+    Coder: typeof import('./components/CodeMirror/Coder.vue')['default']
     Layout: typeof import('./components/Layout.vue')['default']
+    Menu: typeof import('./components/Menu.vue')['default']
     PageTem: typeof import('./components/PageTem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Test: typeof import('./components/Test.vue')['default']
+    TestPage: typeof import('./components/TestPage.vue')['default']
   }
 }

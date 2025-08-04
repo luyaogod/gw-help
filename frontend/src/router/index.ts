@@ -5,14 +5,41 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'index',
-      component: () => import('@/pages/index.vue'),
+      redirect: '/json5',
+    },
+    {
+      path: '/json5',
+      name: 'json5',
+      component: () => import('@/pages/json5.vue'),
       meta: { KeepAlive: true },
     },
     {
-      path: '/page2',
-      name: 'page2',
-      component: () => import('@/pages/page2.vue'),
+      path: '/json-format',
+      name: 'json-format',
+      component: () => import('@/pages/jsonF.vue'),
+      meta: { KeepAlive: true },
+    },
+    {
+      path: '/json-diff',
+      name: 'json-diff',
+      component: () => import('@/pages/jsonDiff.vue'),
+    },
+    {
+      path: '/qq-invoice',
+      name: 'qq-invoice',
+      component: () => import('@/pages/qqInvoice.vue'),
+      meta: { KeepAlive: true },
+    },
+    {
+      path: '/visio2',
+      name: 'visio2',
+      component: () => import('@/pages/visio2.vue'),
+      meta: { KeepAlive: true },
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: () => import('@/pages/test.vue'),
       meta: { KeepAlive: true },
     },
   ],
