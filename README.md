@@ -4,7 +4,7 @@
 ## 架构
 - 前端：vue3、TS、vuetify、codemirror
 - 后端：python、pywebview
-- 用户界面由vue3打包后交由pywebview渲染、pywebview实现python和JS代码家伙
+- 用户界面由vue3打包后交由pywebview渲染、pywebview实现python和JS代码交互
 
 ## 小工具
 - JSON5
