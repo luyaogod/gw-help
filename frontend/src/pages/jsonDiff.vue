@@ -1,12 +1,10 @@
 <script setup lang="ts">
-  import type { EditorView } from '@codemirror/view'
   import type { JSONPath, Node } from 'jsonc-parser'
   import type { Op } from 'jsondiffpatch/formatters/jsonpatch'
-  import { StateEffect, StateField } from '@codemirror/state'
   import { findNodeAtLocation, parseTree } from 'jsonc-parser'
   import * as jsondiffpatch from 'jsondiffpatch'
   import * as jsonPatchFormater from 'jsondiffpatch/formatters/jsonpatch'
-  import { computed, ref } from 'vue'
+  import { ref } from 'vue'
   const leftCoder = ref(null) as any
   const rightCoder = ref(null) as any
 
@@ -21,7 +19,8 @@
   }
 
   /**
-   * JSONPATCH转换为Array
+   * jsondiffpatch输出的结果为JSONPATCH格式转换为数组格式
+   * 如：/studnet/name/1 转换成 [ "studnet", "name",1 ]
    **/
   function jsonPatchPathToArray (path: string, data: any) {
     if (!path.startsWith('/')) {
@@ -67,8 +66,6 @@
     for (const op of ops) {
       // 只收集需要的操作类型
       if (scope.includes(op.op)) {
-        // console.log(op.op)
-        // console.log(jsonPatchPathToArray(op.path, json))
         opts.push({
           op: op.op,
           path: jsonPatchPathToArray(op.path, json),

@@ -5,7 +5,6 @@ import subprocess
 from typing import Literal
 from pydantic import BaseModel
 
-WORD_APP_VISIBLE = "v3.0"
 SUPPORT_FORMAT = Literal["PDF",]
 
 
@@ -183,13 +182,12 @@ class ToolConfig(BaseModel):
     format: SUPPORT_FORMAT
 
 
-def run_tool(config: ToolConfig, update_progress=None):
+def run(config: ToolConfig, callback=None):
     Utils.kill_visio_processes()
     fiels = FileLoader(config.visio_dir).get_visio_files()
-    c = Convertor(
-        visio_dir=config.visio_dir, file_list=fiels, update_progress=update_progress
-    )
+    c = Convertor(visio_dir=config.visio_dir, file_list=fiels, update_progress=callback)
     c.converte(config.format)
+    return "转换完成。"
 
 
 if __name__ == "__main__":
@@ -202,4 +200,4 @@ if __name__ == "__main__":
         visio_dir=visio_dir,
         format="PDF",
     )
-    run_tool(conf, update_progress)
+    run(conf, update_progress)

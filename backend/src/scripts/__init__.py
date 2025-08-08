@@ -1,11 +1,11 @@
-from .qq_invoice import rename_files as qq_invoice_run_tool
+from .qq_invoice import run as run_qq_invoice
 from .visio2 import (
-    run_tool as visio2_run_tool,
-    ToolConfig as Visio2ToolConfig,
+    run as run_visio2,
+    ToolConfig as ConifgVisio2,
 )
 
-__all__= [
-    "qq_invoice_run_tool",
-    "visio2_run_tool",
-    "Visio2ToolConfig"
+__all__ = [
+    "run_qq_invoice",
+    "run_visio2",
+    "ConifgVisio2"
 ]

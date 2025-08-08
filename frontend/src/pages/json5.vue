@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import JSON5 from 'json5'
+  import { parse } from 'jsonc-parser'
   import { computed, ref } from 'vue'
 
   const docJson5 = ref('console.log("hello world!")')
@@ -7,7 +7,7 @@
   const docJson = computed(() => {
     try {
       if (!docJson5.value.trim()) return '' // 空内容处理
-      const parsed = JSON5.parse(docJson5.value) // 解析 JSON5
+      const parsed = parse(docJson5.value) // 解析 JSON5
       return JSON.stringify(parsed, null, 2) // 格式化输出
     } catch {
       return `请输入有效的JSON5`

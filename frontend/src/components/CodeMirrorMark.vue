@@ -9,11 +9,9 @@
   import {
     defaultKeymap, history, historyKeymap, indentWithTab,
   } from '@codemirror/commands'
-  import { javascript } from '@codemirror/lang-javascript'
-  import { json } from '@codemirror/lang-json'
   import {
     bracketMatching, defaultHighlightStyle, foldGutter,
-    foldKeymap, indentOnInput, syntaxHighlighting,
+    indentOnInput, syntaxHighlighting,
   } from '@codemirror/language'
   import { EditorState, StateEffect, StateField } from '@codemirror/state'
   import {
@@ -67,6 +65,7 @@
   const markField = StateField.define({
     create: () => Decoration.none,
     update: (marks, tr) => {
+      // eslint-disable-next-line unicorn/no-array-callback-reference
       marks = marks.map(tr.changes)
 
       for (const effect of tr.effects) {

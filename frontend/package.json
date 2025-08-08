@@ -25,7 +25,6 @@
     "@mdi/font": "7.4.47",
     "@types/json-diff": "^1.0.3",
     "@vitejs/plugin-legacy": "^7.1.0",
-    "json5": "^2.2.3",
     "jsonc-parser": "^3.3.1",
     "jsondiffpatch": "^0.7.3",
     "pinia": "^3.0.3",

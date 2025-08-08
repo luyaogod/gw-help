@@ -3,7 +3,7 @@ import re
 import shutil
 
 
-def rename_files(path):
+def run(path:str):
     # 设置输出目录路径
     output_dir = os.path.join(path, "outputs")
 
@@ -45,10 +45,10 @@ def rename_files(path):
             # print(f"已生成: {filename} -> outputs/{new_filename}")
         else:
             print(f"跳过（不匹配）: {filename}")
+    return "处理完成！输出文件保存在 outputs 目录下。"
 
 
-# 使用示例
 if __name__ == "__main__":
     path = input("请输入目录路径: ").strip("\"' ")  # 去除可能的引号
-    rename_files(path)
+    run(path)
     print("处理完成！输出文件保存在 outputs 目录下。")
