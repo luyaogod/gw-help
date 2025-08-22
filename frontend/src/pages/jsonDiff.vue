@@ -107,8 +107,8 @@
     return loadSourceOpt(astL as Node, opts)
   }
 
-  const docL = ref('{\n  "name":"luygi",\n  "timezone":[-4,-2,{"name":"luygi"},[1,2]],\n  "1":1111\n}')
-  const docR = ref('{\n  "name":"mario",\n  "surface":17840000,\n  "timezone":[-4,2,{"name":"mario"},[2,3]]\n}')
+  const docL = ref('')
+  const docR = ref('')
 
   function reMark () {
     leftCoder.value.clearAllMarks()

@@ -37,6 +37,18 @@ const router = createRouter({
       meta: { KeepAlive: true },
     },
     {
+      path: '/txt2sql',
+      name: 'txt2sql',
+      component: () => import('@/pages/txt2sql.vue'),
+      meta: { KeepAlive: true },
+    },
+    {
+      path: '/update-col-sql',
+      name: 'updateColSql',
+      component: () => import('@/pages/updateColSql.vue'),
+      meta: { KeepAlive: true },
+    },
+    {
       path: '/test',
       name: 'test',
       component: () => import('@/pages/test.vue'),

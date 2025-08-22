@@ -10,9 +10,9 @@
     switch (name.value) {
       case 'xs': { return 120
       }
-      case 'sm': { return 150
+      case 'sm': { return 120
       }
-      case 'md': { return 200
+      case 'md': { return 120
       }
       case 'lg': { return 200
       }

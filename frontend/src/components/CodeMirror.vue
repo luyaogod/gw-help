@@ -1,14 +1,9 @@
-<template>
-  <div>
-    <div ref="editorContainer" />
-  </div>
-</template>
-
 <script setup lang="ts">
   import type { Extension } from '@codemirror/state'
   import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands'
   import { javascript } from '@codemirror/lang-javascript'
   import { json } from '@codemirror/lang-json'
+  import { sql } from '@codemirror/lang-sql'
   import {
     bracketMatching, defaultHighlightStyle, foldGutter,
     foldKeymap, indentOnInput, syntaxHighlighting,
@@ -43,48 +38,60 @@
   })
 
   onMounted(() => {
-    const languageExtension = props.language === 'json' ? json() : javascript()
+    let languageExtension
+    if (props.language === 'json') {
+      languageExtension = json()
+    } else if (props.language === 'sql') {
+      languageExtension = sql()
+    } else {
+      languageExtension = javascript()
+    }
+
+    const extensions: Extension[] = [
+      // 历史记录
+      history(),
+      // 显示行号
+      lineNumbers(),
+      // 当前行高亮
+      highlightActiveLine(),
+      // 当前行号高亮
+      highlightActiveLineGutter(),
+      // 输入时自动根据语法进行缩进
+      indentOnInput(),
+      // 使用默认样式进行语法高亮
+      syntaxHighlighting(defaultHighlightStyle),
+      // 高亮显示匹配的括号
+      bracketMatching(),
+      // 显示代码折叠标记侧边栏
+      foldGutter(),
+      // 配置快捷键
+      keymap.of([
+        // 默认快捷键
+        ...defaultKeymap,
+        // 历史记录快捷键
+        ...historyKeymap,
+        // Tab缩进
+        indentWithTab,
+      ]),
+      // 添加内容变化监听
+      EditorView.updateListener.of(update => {
+        if (update.docChanged) {
+          const doc = update.state.doc.toString()
+          emit('update:modelValue', doc)
+        }
+      }),
+      // 新增：父组件传入的额外扩展
+      ...props.extensions as Extension[],
+    ]
+
+    // 只有当 languageExtension 存在时才添加到扩展中
+    if (languageExtension) {
+      extensions.push(languageExtension)
+    }
 
     const startState = EditorState.create({
       doc: props.modelValue,
-      extensions: [
-        // 历史记录
-        history(),
-        // 显示行号
-        lineNumbers(),
-        // 当前行高亮
-        highlightActiveLine(),
-        // 当前行号高亮
-        highlightActiveLineGutter(),
-        // 输入时自动根据语法进行缩进
-        indentOnInput(),
-        // 使用默认样式进行语法高亮
-        syntaxHighlighting(defaultHighlightStyle),
-        // 语言扩展
-        languageExtension,
-        // 高亮显示匹配的括号
-        bracketMatching(),
-        // 显示代码折叠标记侧边栏
-        foldGutter(),
-        // 配置快捷键
-        keymap.of([
-          // 默认快捷键
-          ...defaultKeymap,
-          // 历史记录快捷键
-          ...historyKeymap,
-          // Tab缩进
-          indentWithTab,
-        ]),
-        // 添加内容变化监听
-        EditorView.updateListener.of(update => {
-          if (update.docChanged) {
-            const doc = update.state.doc.toString()
-            emit('update:modelValue', doc)
-          }
-        }),
-        // 新增：父组件传入的额外扩展
-        ...props.extensions as Extension[],
-      ],
+      extensions,
     })
 
     editorView = new EditorView({
@@ -115,6 +122,12 @@
     }
   })
 </script>
+
+<template>
+  <div>
+    <div ref="editorContainer" />
+  </div>
+</template>
 
 <style>
 /* 基础样式 */
