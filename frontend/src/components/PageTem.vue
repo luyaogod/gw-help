@@ -7,7 +7,7 @@
 <template>
   <v-sheet class="pa-1 rounded-lg" height="calc(100vh - 16px)">
     <!-- 工具按钮区域 -->
-    <v-sheet class="d-flex justify-space-between mb-2">
+    <v-sheet class="pl-1 pr-1 pt-1 d-flex justify-space-between mb-2">
       <!-- 左侧按钮组 -->
       <v-btn-group divided variant="outlined">
         <v-btn icon="mdi-menu" @click="appStore.isSiderOpen = !appStore.isSiderOpen" />

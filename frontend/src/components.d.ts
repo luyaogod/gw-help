@@ -11,6 +11,8 @@ declare module 'vue' {
     CodeMirror: typeof import('./components/CodeMirror.vue')['default']
     CodeMirrorMark: typeof import('./components/CodeMirrorMark.vue')['default']
     Coder: typeof import('./components/coder/index.vue')['default']
+    Content: typeof import('./components/Content.vue')['default']
+    ContentSplit: typeof import('./components/ContentSplit.vue')['default']
     Layout: typeof import('./components/Layout.vue')['default']
     Menu: typeof import('./components/Menu.vue')['default']
     PageTem: typeof import('./components/PageTem.vue')['default']

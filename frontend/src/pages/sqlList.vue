@@ -38,24 +38,14 @@
       <v-btn @click="()=>{copy(sqlCode); setMsg('复制成功'); showMsg()}">复制</v-btn>
     </template>
     <template #page-content>
-      <v-container class="pa-0 mt-1" fluid height="100%">
-        <v-row class="h-100  ma-0">
-          <!-- 左侧 -->
-          <v-col class="pa-0 pr-1 h-100 overflow-y-auto overflow-x-hidden" cols="6">
-            <v-sheet>
-              <Coder v-model="row" />
-            </v-sheet>
-          </v-col>
-
-          <!-- 右侧 -->
-          <v-col class="pa-0 pl-1 h-100 overflow-y-auto overflow-x-hidden" cols="6">
-            <v-sheet>
-              <Coder v-model="sqlCode" :language="sql()" />
-            </v-sheet>
-
-          </v-col>
-        </v-row>
-      </v-container>
+      <ContentSplit>
+        <template #left>
+          <Coder v-model="row" />
+        </template>
+        <template #right>
+          <Coder v-model="sqlCode" :language="sql()" />
+        </template>
+      </ContentSplit>
     </template>
   </PageTem>
 

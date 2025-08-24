@@ -16,10 +16,10 @@
   const { msg, setMsg, isShow, showMsg } = useMsg()
   const { copy } = useClipboard()
 
-  const EditorL = ref<CoderExposes>(null as any)
-  const EditorR = ref<CoderExposes>(null as any)
-  const docL = ref('1111')
-  const docR = ref('1111')
+  const editorL = ref<CoderExposes>(null as any)
+  const editorR = ref<CoderExposes>(null as any)
+  const docL = ref('')
+  const docR = ref('')
 
   interface DiffNode {
     op: string
@@ -113,28 +113,28 @@
   }
 
   function markDiff () {
-    clearAllMarks(EditorL.value.view)
-    clearAllMarks(EditorR.value.view)
+    clearAllMarks(editorL.value.view)
+    clearAllMarks(editorR.value.view)
     const mlistL = loadMarkList(docL.value, docR.value)
     const mlistR = loadMarkList(docR.value, docL.value)
     for (const m of mlistL) {
       if (m.op === 'replace') {
         // 对发生替换的位置高亮显示
-        mark(EditorL.value.view, m.offset, (m.offset + m.length), 'cm-diff-replace')
+        mark(editorL.value.view, m.offset, (m.offset + m.length), 'cm-diff-replace')
       }
       if (m.op === 'remove') {
         // 对发生删除的位置高亮显示
-        mark(EditorL.value.view, m.offset, (m.offset + m.length), 'cm-diff-remove')
+        mark(editorL.value.view, m.offset, (m.offset + m.length), 'cm-diff-remove')
       }
     }
     for (const m of mlistR) {
       if (m.op === 'replace') {
         // 对发生替换的位置高亮显示
-        mark(EditorR.value.view, m.offset, (m.offset + m.length), 'cm-diff-replace')
+        mark(editorR.value.view, m.offset, (m.offset + m.length), 'cm-diff-replace')
       }
       if (m.op === 'remove') {
         // 对发生删除的位置高亮显示
-        mark(EditorR.value.view, m.offset, (m.offset + m.length), 'cm-diff-add')
+        mark(editorR.value.view, m.offset, (m.offset + m.length), 'cm-diff-add')
       }
     }
   }
@@ -147,37 +147,33 @@
     markDiff()
   })
 
-  function sorL () {
-    const sorted = sortObject(parse(docL.value), true)
-    docL.value = JSON.stringify(sorted, null, 2)
-  }
-
-  function sorR () {
-    const sorted = sortObject(parse(docR.value), true)
-    docR.value = JSON.stringify(sorted, null, 2)
+  function sort () {
+    const sortedL = sortObject(parse(docL.value), true)
+    editorL.value.replaceDoc(JSON.stringify(sortedL, null, 2))
+    const sortedR = sortObject(parse(docR.value), true)
+    editorR.value.replaceDoc(JSON.stringify(sortedR, null, 2))
   }
 
   onMounted(() => {
     const markCssExtension = EditorView.baseTheme(
       {
-        '.cm-marked-remove': {
+        '.cm-diff-remove': {
           backgroundColor: 'rgba(255, 0, 0, 0.2)',
         },
         '.cm-diff-add': {
           backgroundColor: 'rgba(0, 255, 0, 0.2)',
         },
-        '.cm-diff-remove': {
+        '.cm-diff-replace': {
           backgroundColor: 'rgba(255, 215, 0, 0.3)',
         },
       })
 
-    EditorL.value.addExtensions(
+    editorL.value.addExtensions(
       [markCssExtension],
     )
-    EditorR.value.addExtensions(
+    editorR.value.addExtensions(
       [markCssExtension],
     )
-    // mark(EditorL.value.view, 0, 3, 'cm-diff-remove')
   })
 </script>
 
@@ -188,30 +184,21 @@
     <template #tool-prepend>
       <v-btn>清除</v-btn>
       <v-btn @click="()=>{copy(docL); setMsg('复制成功'); showMsg()}">复制</v-btn>
-      <v-btn @click="()=>{sorL();sorR()}">升序</v-btn>
+      <v-btn @click="sort()">升序</v-btn>
     </template>
     <template #tool-append>
       <v-btn>清除</v-btn>
       <v-btn @click="()=>{copy(docR); setMsg('复制成功'); showMsg()}">复制</v-btn>
     </template>
     <template #page-content>
-      <v-container class="pa-0 mt-1" fluid height="100%">
-        <v-row class="h-100  ma-0">
-          <!-- 左侧 -->
-          <v-col cols="6 pa-0 pr-1 h-100 overflow-y-auto overflow-x-hidden">
-            <v-sheet>
-              <Coder ref="EditorL" v-model="docL" :extensions="[markField]" :language="json()" />
-            </v-sheet>
-          </v-col>
-
-          <!-- 右侧 -->
-          <v-col cols="6 pa-0 pl-1 h-100 overflow-y-auto overflow-x-hidden">
-            <v-sheet>
-              <Coder ref="EditorR" v-model="docR" :extensions="[markField]" :language="json()" />
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </v-container>
+      <ContentSplit>
+        <template #left>
+          <Coder ref="editorL" v-model="docL" :extensions="[markField]" :language="json()" />
+        </template>
+        <template #right>
+          <Coder ref="editorR" v-model="docR" :extensions="[markField]" :language="json()" />
+        </template>
+      </ContentSplit>
 
     </template>
   </PageTem>
@@ -219,4 +206,21 @@
 </template>
 
 <style scoped>
+.cm-marked-remove {
+  background-color: rgba(255, 0, 0, 0.2);  /* 浅红色背景表示删除 */
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.cm-marked-add {
+  background-color: rgba(0, 255, 0, 0.2);  /* 浅绿色背景表示新增 */
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.cm-marked-replace {
+  background-color: rgba(255, 215, 0, 0.3);  /* 浅黄色背景表示修改 */
+  border-radius: 2px;
+  padding: 0 2px;
+}
 </style>

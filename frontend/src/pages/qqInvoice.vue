@@ -31,14 +31,16 @@
       <!-- 复制结果 -->
     </template>
     <template #page-content>
-      <v-text-field v-model="params.name" label="发票目录路径" :loading="loading" />
-      <v-textarea
-        v-model="scriptRet"
-        auto-grow
-        disabled
-        hide-details
-        variant="outlined"
-      />
+      <Content>
+        <v-text-field v-model="params.name" label="发票目录路径" :loading="loading" />
+        <v-textarea
+          v-model="scriptRet"
+          auto-grow
+          disabled
+          hide-details
+          variant="outlined"
+        />
+      </Content>
 
     </template>
   </PageTem>

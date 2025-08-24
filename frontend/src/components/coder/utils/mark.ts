@@ -46,6 +46,7 @@ export const markField = StateField.define({
 })
 
 export function mark (view: EditorView, from: number, to: number, className: string) {
+  console.log('mark', view, from, to, className)
   if (!view) {
     return
   }

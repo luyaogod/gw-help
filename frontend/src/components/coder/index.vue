@@ -12,6 +12,7 @@
     editor: Ref<HTMLElement | undefined>
     extensions: ComputedRef<Extension[]>
     addExtensions: (extensions: Extension[]) => void
+    replaceDoc: (doc: string) => void
   }
 
   const props = defineProps<CoderProps>()
@@ -59,11 +60,18 @@
     })
   }
 
+  function replaceDoc (value: string) {
+    view.value.dispatch({
+      changes: { from: 0, to: view.value.state.doc.length, insert: value },
+    })
+  }
+
   defineExpose<CoderExposes>({
     view,
     editor,
     extensions,
     addExtensions,
+    replaceDoc,
   })
 
 </script>
