@@ -1,14 +1,17 @@
 <script setup lang="ts">
   import { HotTable } from '@handsontable/vue3'
+  import { useClipboard } from '@vueuse/core'
   import {
     registerLanguageDictionary,
     zhCN,
   } from 'handsontable/i18n'
   import { registerAllModules } from 'handsontable/registry'
   import { ref } from 'vue'
+  import { useMsg } from '@/uses/useMsg'
   import 'handsontable/styles/handsontable.css'
   import 'handsontable/styles/ht-theme-main.css'
-
+  const { msg, setMsg, isShow, showMsg } = useMsg()
+  const { copy } = useClipboard()
   registerLanguageDictionary(zhCN)
   registerAllModules()
 
@@ -25,7 +28,6 @@
       ['新', 10],
       ['年', 20],
       ['好', 30],
-      [666],
     ],
     height: 'auto',
     rowHeaders: true,
@@ -66,7 +68,8 @@
       if (!row || row.length < 2) continue
 
       // 获取要设置的值（最后一列）
-      const value = row.at(-1)
+      // eslint-disable-next-line unicorn/prefer-at
+      const value = row[row.length - 1]
       // 条件字段和值（除最后一列外的所有列）
       const conditions: string[] = []
 
@@ -99,28 +102,31 @@
     sql.value = generateSQL({ tName: tableName.value, tData: hotSettings.value.data })
   }
 
-//   const exampleData = [
-//     ['field1', 'field2', 'newValue'],
-//     [1, '新', 10],
-//     [2, '年', 20],
-//     [3, '好', 30],
-//     [4],
-//   ]
-//   console.log(generateSQL({ tData: exampleData }))
-// UPDATE Table SET value = 10 WHERE field1 = 1 AND field2 = '新';
-// UPDATE Table SET value = 20 WHERE field1 = 2 AND field2 = '年';
-// UPDATE Table SET value = 30 WHERE field1 = 3 AND field2 = '好';
+  function clear () {
+    tableName.value = ''
+    sql.value = ''
+    const iniData = [
+      ['字段', '新值'],
+      ['', ''],
+    ]
+    hotTableRef.value?.hotInstance.loadData(iniData)
+    hotSettings.value.data = iniData
+  }
+
+  run()
+
 </script>
 
 <template>
+  <v-snackbar v-model="isShow" :text="msg" timeout="1000" />
   <PageTem>
     <template #tool-prepend>
-      <!-- btns -->
       <v-btn icon="mdi-play" @click="run()" />
       <v-btn @click="addNewRow()">+字段</v-btn>
+      <v-btn @click="clear()">清除</v-btn>
     </template>
     <template #tool-append>
-      <!-- btns -->
+      <v-btn @click="()=>{copy(sql); setMsg('复制成功'); showMsg()}">复制</v-btn>
     </template>
     <template #page-content>
       <v-container class="pa-0 mt-1" fluid height="100%">

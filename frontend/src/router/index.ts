@@ -14,12 +14,6 @@ const router = createRouter({
       meta: { KeepAlive: true },
     },
     {
-      path: '/json-format',
-      name: 'json-format',
-      component: () => import('@/pages/jsonF.vue'),
-      meta: { KeepAlive: true },
-    },
-    {
       path: '/json-diff',
       name: 'json-diff',
       component: () => import('@/pages/jsonDiff.vue'),
@@ -37,15 +31,15 @@ const router = createRouter({
       meta: { KeepAlive: true },
     },
     {
-      path: '/txt2sql',
-      name: 'txt2sql',
-      component: () => import('@/pages/txt2sql.vue'),
+      path: '/sql-list',
+      name: 'sqlList',
+      component: () => import('@/pages/sqlList.vue'),
       meta: { KeepAlive: true },
     },
     {
-      path: '/update-col-sql',
-      name: 'updateColSql',
-      component: () => import('@/pages/updateColSql.vue'),
+      path: '/sql-update-col',
+      name: 'sqlUpdateCol',
+      component: () => import('@/pages/sqlUpdateCol.vue'),
       meta: { KeepAlive: true },
     },
     {

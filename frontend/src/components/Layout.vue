@@ -14,11 +14,11 @@
       }
       case 'md': { return 120
       }
-      case 'lg': { return 200
+      case 'lg': { return 140
       }
-      case 'xl': { return 200
+      case 'xl': { return 140
       }
-      default: { return 200
+      default: { return 140
       }
     }
   })

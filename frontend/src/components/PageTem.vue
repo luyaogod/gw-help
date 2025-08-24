@@ -10,7 +10,7 @@
     <v-sheet class="d-flex justify-space-between mb-2">
       <!-- 左侧按钮组 -->
       <v-btn-group divided variant="outlined">
-        <v-btn icon="mdi-dock-left" @click="appStore.isSiderOpen = !appStore.isSiderOpen" />
+        <v-btn icon="mdi-menu" @click="appStore.isSiderOpen = !appStore.isSiderOpen" />
         <slot name="tool-prepend" />
       </v-btn-group>
 

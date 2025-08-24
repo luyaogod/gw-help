@@ -1,6 +1,9 @@
 <script setup lang="ts">
+  import { useClipboard } from '@vueuse/core'
   import { computed, ref } from 'vue'
-
+  import { useMsg } from '@/uses/useMsg'
+  const { msg, setMsg, isShow, showMsg } = useMsg()
+  const { copy } = useClipboard()
   function formatToSQLIn (data: string) {
     // 按行分割数据，并过滤空行
     const lines = data.split('\n').filter(line => line.trim() !== '')
@@ -18,17 +21,20 @@
     return formatToSQLIn(row.value)
   })
 
+  function clear () {
+    row.value = ''
+  }
+
 </script>
 
 <template>
+  <v-snackbar v-model="isShow" :text="msg" timeout="1000" />
   <PageTem>
     <template #tool-prepend>
-      <!-- 运行按钮 -->
-      <!-- <v-btn icon="mdi-play" @click="play()" /> -->
+      <v-btn @click="clear()">清除</v-btn>
     </template>
     <template #tool-append>
-      <!-- 复制结果 -->
-      <!-- <v-btn icon="mdi-content-copy" size="small" /> -->
+      <v-btn @click="()=>{copy(sql); setMsg('复制成功'); showMsg()}">复制</v-btn>
     </template>
     <template #page-content>
       <v-container class="pa-0 mt-1" fluid height="100%">

@@ -3,8 +3,15 @@
 
 <template>
   <PageTem>
-    <template #tool-prepend />
-    <template #tool-append />
+    <template #tool-prepend>
+      <v-btn>清除</v-btn>
+      <v-btn>复制</v-btn>
+      <v-btn icon="mdi-sort" />
+    </template>
+    <template #tool-append>
+      <v-btn>清除</v-btn>
+      <v-btn>复制</v-btn>
+    </template>
     <template #page-content>
       <!-- <v-container class="bg-green pa-0 mt-1" fluid height="100%"> -->
       <v-row dense>

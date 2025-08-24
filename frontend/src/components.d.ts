@@ -10,11 +10,17 @@ declare module 'vue' {
   export interface GlobalComponents {
     CodeMirror: typeof import('./components/CodeMirror.vue')['default']
     CodeMirrorMark: typeof import('./components/CodeMirrorMark.vue')['default']
+    Coder: typeof import('./components/coder/index.vue')['default']
     Layout: typeof import('./components/Layout.vue')['default']
     Menu: typeof import('./components/Menu.vue')['default']
     PageTem: typeof import('./components/PageTem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TestPage: typeof import('./components/TestPage.vue')['default']
+    UseCodeCore: typeof import('./components/coder/hooks/useCodeCore.vue')['default']
+    UseEditorState: typeof import('./components/coder/hooks/useEditorState.vue')['default']
+    UseEditorView: typeof import('./components/coder/hooks/useEditorView.vue')['default']
+    UseExtensions: typeof import('./components/coder/hooks/useExtensions.vue')['default']
+    UseMarkDiff: typeof import('./components/coder/plugins/useMarkDiff.vue')['default']
   }
 }

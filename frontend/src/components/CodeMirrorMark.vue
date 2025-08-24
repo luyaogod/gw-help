@@ -153,9 +153,11 @@
 
   // 监听 modelValue 变化，更新编辑器内容
   watch(() => props.modelValue, newValue => {
+    console.log('sync')
     if (editorView) {
       const currentValue = editorView.state.doc.toString()
       if (newValue !== currentValue) {
+        console.log('sync')
         editorView.dispatch({
           changes: {
             from: 0,
@@ -176,6 +178,7 @@
   defineExpose({
     markText,
     clearAllMarks,
+    editorView,
   })
 
 </script>

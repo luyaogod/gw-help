@@ -21,11 +21,10 @@ declare module 'vue-router/auto-routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/json5': RouteRecordInfo<'/json5', '/json5', Record<never, never>, Record<never, never>>,
     '/jsonDiff': RouteRecordInfo<'/jsonDiff', '/jsonDiff', Record<never, never>, Record<never, never>>,
-    '/jsonF': RouteRecordInfo<'/jsonF', '/jsonF', Record<never, never>, Record<never, never>>,
     '/qqInvoice': RouteRecordInfo<'/qqInvoice', '/qqInvoice', Record<never, never>, Record<never, never>>,
+    '/sqlList': RouteRecordInfo<'/sqlList', '/sqlList', Record<never, never>, Record<never, never>>,
+    '/sqlUpdateCol': RouteRecordInfo<'/sqlUpdateCol', '/sqlUpdateCol', Record<never, never>, Record<never, never>>,
     '/test': RouteRecordInfo<'/test', '/test', Record<never, never>, Record<never, never>>,
-    '/txt2sql': RouteRecordInfo<'/txt2sql', '/txt2sql', Record<never, never>, Record<never, never>>,
-    '/updateColSql': RouteRecordInfo<'/updateColSql', '/updateColSql', Record<never, never>, Record<never, never>>,
     '/visio2': RouteRecordInfo<'/visio2', '/visio2', Record<never, never>, Record<never, never>>,
   }
 }

@@ -1,27 +1,41 @@
 <script setup lang="ts">
   import type { JSONPath, Node } from 'jsonc-parser'
   import type { Op } from 'jsondiffpatch/formatters/jsonpatch'
-  import { findNodeAtLocation, parseTree } from 'jsonc-parser'
+  import type { CoderExposes } from '@/components/coder/index.vue'
+  import { json } from '@codemirror/lang-json'
+  import { useClipboard } from '@vueuse/core'
+  import { findNodeAtLocation, parse, parseTree } from 'jsonc-parser'
   import * as jsondiffpatch from 'jsondiffpatch'
   import * as jsonPatchFormater from 'jsondiffpatch/formatters/jsonpatch'
   import { ref } from 'vue'
-  const leftCoder = ref(null) as any
-  const rightCoder = ref(null) as any
+  import { clearMarks, mark } from '@/components/coder/utils/markFile'
+  import { useMsg } from '@/uses/useMsg'
+  import { sortObject } from '@/utils/sortObj'
+import { EditorView } from '@codemirror/view'
 
-  interface Opt {
+  const { msg, setMsg, isShow, showMsg } = useMsg()
+  const { copy } = useClipboard()
+
+  const EditorL = ref<CoderExposes>(null as any)
+  const EditorR = ref<CoderExposes>(null as any)
+  const docL = ref('')
+  const docR = ref('')
+
+  interface DiffNode {
     op: string
     path: JSONPath
   }
 
-  interface SourceOpt extends Opt {
+  interface DiffNodeLoc extends DiffNode {
     offset: number
     length: number
   }
 
   /**
-   * jsondiffpatch输出的结果为JSONPATCH格式转换为数组格式
-   * 如：/studnet/name/1 转换成 [ "studnet", "name",1 ]
-   **/
+   * 将jsondiffpatch输出的JSONPATCH格式转换为数组格式
+   *
+   * 如：/studnet/name/1 => [ "studnet", "name",1 ]
+   */
   function jsonPatchPathToArray (path: string, data: any) {
     if (!path.startsWith('/')) {
       throw new Error('JSON Patch path must start with "/"')
@@ -58,100 +72,127 @@
     return result
   }
 
-  /**
-   * 封装需要的异动操作类型
-  **/
-  function loadOpts (scope: string[], ops: Op[], json: any): Opt[] {
-    const opts: Opt[] = []
-    for (const op of ops) {
-      // 只收集需要的操作类型
-      if (scope.includes(op.op)) {
-        opts.push({
-          op: op.op,
-          path: jsonPatchPathToArray(op.path, json),
-        })
-      }
-    }
-    return opts
+  /** 操作类型过滤和封装 */
+  function laodDiffNodes (scope: string[], ops: Op[], json: any): DiffNode[] {
+    return ops
+      .filter(op => scope.includes(op.op)) // 筛选出需要的操作类型
+      .map(op => ({ // 转换为所需的 Opt 格式
+        op: op.op,
+        path: jsonPatchPathToArray(op.path, json),
+      }))
   }
 
-  /**
-   * 查找和封装异动操作涉及的原始JSON字符串位置
-  **/
-  function loadSourceOpt (node: Node, opts: Opt[]): SourceOpt[] {
-    const sourceOpts: SourceOpt[] = []
-    for (const opt of opts) {
-      const item = findNodeAtLocation(node, opt.path)
+  /** 查找异动节点再原始字符串的偏移位置 */
+  function laodDiffNodeLocs (node: Node, diffNodes: DiffNode[]): DiffNodeLoc[] {
+    const diffNodeLocs: DiffNodeLoc[] = []
+    for (const diffNode of diffNodes) {
+      const item = findNodeAtLocation(node, diffNode.path)
       if (item) {
-        sourceOpts.push({
-          op: opt.op,
-          path: opt.path,
+        diffNodeLocs.push({
+          op: diffNode.op,
+          path: diffNode.path,
           offset: item.offset,
           length: item.length,
         })
       } else {
-        throw new Error(`Can't find node at ${opt.path}`)
+        throw new Error(`Can't find node at ${diffNode.path}`)
       }
     }
-    return sourceOpts
+    return diffNodeLocs
   }
 
-  function loadMarkList (left: string, right: string): SourceOpt[] {
-    const scope = ['remove', 'replace', 'move']
-    const jsonL = JSON.parse(left)
-    const jsonR = JSON.parse(right)
+  /** 获取 diff 节点的位置 */
+  function loadMarkList (left: string, right: string): DiffNodeLoc[] {
+    const jsonL = parse(left)
+    const jsonR = parse(right)
     const astL = parseTree(left)
     const delta = jsondiffpatch.diff(jsonL, jsonR)
     const ops = jsonPatchFormater.format(delta)
-    const opts = loadOpts(scope, ops, jsonL)
-    return loadSourceOpt(astL as Node, opts)
+    const diffNodes = laodDiffNodes(['remove', 'replace', 'move'], ops, jsonL)
+    return laodDiffNodeLocs(astL as Node, diffNodes)
   }
 
-  const docL = ref('')
-  const docR = ref('')
-
-  function reMark () {
-    leftCoder.value.clearAllMarks()
-    rightCoder.value.clearAllMarks()
+  function markDiff () {
+    clearMarks(EditorL.value.view)
+    clearMarks(EditorR.value.view)
     const mlistL = loadMarkList(docL.value, docR.value)
+    const mlistR = loadMarkList(docR.value, docL.value)
     for (const m of mlistL) {
       if (m.op === 'replace') {
-        leftCoder.value.markText(m.offset, (m.offset + m.length), 'cm-marked-replace')
+        // 对发生替换的位置高亮显示
+        mark(EditorL.value.view, m.offset, (m.offset + m.length), 'cm-diff-replace')
       }
       if (m.op === 'remove') {
-        leftCoder.value.markText(m.offset, (m.offset + m.length), 'cm-marked-remove')
+        // 对发生删除的位置高亮显示
+        mark(EditorL.value.view, m.offset, (m.offset + m.length), 'cm-diff-remove')
       }
     }
-    const mlistR = loadMarkList(docR.value, docL.value)
     for (const m of mlistR) {
       if (m.op === 'replace') {
-        rightCoder.value.markText(m.offset, (m.offset + m.length), 'cm-marked-replace')
+        // 对发生替换的位置高亮显示
+        mark(EditorR.value.view, m.offset, (m.offset + m.length), 'cm-diff-replace')
       }
       if (m.op === 'remove') {
-        rightCoder.value.markText(m.offset, (m.offset + m.length), 'cm-marked-add')
+        // 对发生删除的位置高亮显示
+        mark(EditorR.value.view, m.offset, (m.offset + m.length), 'cm-diff-add')
       }
     }
   }
 
   watch(docL, () => {
-    reMark()
+    markDiff()
   })
 
   watch(docR, () => {
-    reMark()
+    markDiff()
   })
 
+  function sorL () {
+    const sorted = sortObject(parse(docL.value), true)
+    docL.value = JSON.stringify(sorted, null, 2)
+  }
+
+  function sorR () {
+    const sorted = sortObject(parse(docR.value), true)
+    docR.value = JSON.stringify(sorted, null, 2)
+  }
+
+  onMounted(() => {
+    // 注册样式
+    const markCssExtension = EditorView.baseTheme(
+      {
+        '.cm-marked-remove': {
+          backgroundColor: 'rgba(255, 0, 0, 0.2)',
+        },
+        '.cm-diff-add': {
+          backgroundColor: 'rgba(0, 255, 0, 0.2)',
+        },
+        '.cm-diff-remove': {
+          backgroundColor: 'rgba(255, 215, 0, 0.3)',
+        },
+      })
+
+    EditorL.value.addExtensions(
+      [markCssExtension],
+    )
+    EditorR.value.addExtensions(
+      [markCssExtension],
+    )
+  })
 </script>
 
 <template>
+  <v-snackbar v-model="isShow" :text="msg" timeout="1000" />
+
   <PageTem>
     <template #tool-prepend>
-      <!-- 运行按钮 -->
-      <!-- <v-btn icon="mdi-play" @click="play()" /> -->
+      <v-btn>清除</v-btn>
+      <v-btn @click="()=>{copy(docL); setMsg('复制成功'); showMsg()}">复制</v-btn>
+      <v-btn @click="()=>{sorL();sorR()}">升序</v-btn>
     </template>
     <template #tool-append>
-      <!-- 复制结果 -->
-      <!-- <v-btn icon="mdi-content-copy" size="small" /> -->
+      <v-btn>清除</v-btn>
+      <v-btn @click="()=>{copy(docR); setMsg('复制成功'); showMsg()}">复制</v-btn>
     </template>
     <template #page-content>
       <v-container class="pa-0 mt-1" fluid height="100%">
@@ -159,16 +200,15 @@
           <!-- 左侧 -->
           <v-col cols="6 pa-0 pr-1 h-100 overflow-y-auto overflow-x-hidden">
             <v-sheet>
-              <CodeMirrorMark ref="leftCoder" v-model="docL" language="js" />
+              <Coder ref="EditorL" v-model="docL" :language="json()" />
             </v-sheet>
           </v-col>
 
           <!-- 右侧 -->
           <v-col cols="6 pa-0 pl-1 h-100 overflow-y-auto overflow-x-hidden">
             <v-sheet>
-              <CodeMirrorMark ref="rightCoder" v-model="docR" language="js" />
+              <Coder ref="EditorR" v-model="docR" :language="json()" />
             </v-sheet>
-
           </v-col>
         </v-row>
       </v-container>
@@ -179,5 +219,4 @@
 </template>
 
 <style scoped>
-
 </style>
