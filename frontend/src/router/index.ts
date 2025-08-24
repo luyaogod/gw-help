@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('@/pages/jsonDiff.vue'),
     },
     {
+      path: '/json-table',
+      name: 'json-table',
+      component: () => import('@/pages/jsonTable.vue'),
+    },
+    {
       path: '/qq-invoice',
       name: 'qq-invoice',
       component: () => import('@/pages/qqInvoice.vue'),

@@ -1,9 +1,7 @@
 import type { Extension } from '@codemirror/state'
-import type {
-  ViewUpdate } from '@codemirror/view'
+import type { ViewUpdate } from '@codemirror/view'
 import type { ComputedRef } from 'vue'
-import { defaultKeymap,
-  history, historyKeymap } from '@codemirror/commands'
+import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands'
 import {
   bracketMatching, defaultHighlightStyle, foldGutter,
   foldKeymap, indentOnInput, syntaxHighlighting,
@@ -13,8 +11,7 @@ import {
 } from '@codemirror/search'
 import { Compartment, EditorState } from '@codemirror/state'
 import { crosshairCursor,
-  drawSelection, dropCursor,
-  EditorView,
+  drawSelection, dropCursor, EditorView,
   highlightActiveLine, highlightActiveLineGutter,
   highlightSpecialChars, keymap, lineNumbers, rectangularSelection } from '@codemirror/view'
 import { computed } from 'vue'
@@ -80,7 +77,9 @@ export function useExtensions (options: UseExtensionsOptions = {}): UseExtension
         ? tabSize.of(EditorState.tabSize.of(options.tabSize))
         : undefined,
       keymap.of([
-      // 一组基础快捷键绑定
+        // Tab缩进
+        indentWithTab,
+        // 一组基础快捷键绑定
         ...defaultKeymap,
         // 搜索相关快捷键
         ...searchKeymap,

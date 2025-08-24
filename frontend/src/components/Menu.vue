@@ -6,6 +6,7 @@
     <v-list-subheader>JSON</v-list-subheader>
     <v-list-item title="JSON5" to="/json5" value="json5" />
     <v-list-item title="JSON差异" to="/json-diff" value="json-diff" />
+    <v-list-item title="表格转JSON" to="/json-table" value="json-table" />
     <v-list-subheader>SQL</v-list-subheader>
     <v-list-item title="列表转SQL" to="/sql-list" value="sql-list" />
     <v-list-item title="更新一列" to="/sql-update-col" value="sql-update-col" />

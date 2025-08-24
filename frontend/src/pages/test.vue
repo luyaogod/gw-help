@@ -168,6 +168,87 @@
       parent: coder.value as any,
     })
   })
+
+  // 定义二维表中每一行的类型：每一行是一个字符串数组
+  type TableRow = string[]
+
+  // 定义函数参数类型
+  type ConvertTableOptions = {
+    keyColumn?: number
+    valueColumn?: number
+    commentColumns?: number[]
+  }
+
+  function convertTableToJsonWithComments (
+    table: TableRow[],
+    options: ConvertTableOptions = {},
+  ): string {
+    const {
+      keyColumn = 0,
+      valueColumn = 1,
+      commentColumns = [2, 3],
+    } = options
+
+    // 手动构建带注释的JSON字符串
+    let jsonString = '{\n'
+
+    for (const [index, row] of table.entries()) {
+      // 获取键值
+      const key = row[keyColumn]
+      const value = row[valueColumn]
+
+      // 合并指定列的注释
+      const comments = commentColumns.map(colIndex => row[colIndex] || '').join('')
+
+      // 添加属性和注释
+      jsonString += `  "${key}": "${value}" /*${comments}*/`
+
+      // 如果不是最后一项，添加逗号
+      if (index < table.length - 1) {
+        jsonString += ','
+      }
+
+      jsonString += '\n'
+    }
+
+    jsonString += '}'
+
+    return jsonString
+  }
+
+  // 使用示例
+  const table: TableRow[] = [
+    ['field35', 'string', 'TRUE', 'ERP销售订单号'],
+    ['field37', 'string', 'TRUE', 'ERP工单号'],
+    ['type', 'string', 'TRUE', '客户名称'],
+    ['field1', 'string', 'TRUE', '客户代码'],
+    ['name', 'string', 'TRUE', '客供料名称'],
+    ['field8', 'string', 'TRUE', '产品名称'],
+    ['field9', 'string', 'TRUE', '成品名称'],
+    ['field27', 'string', 'TRUE', 'Device Group'],
+    ['field5', 'string', 'TRUE', '封装形式'],
+    ['field39', 'string', 'FALSE', 'COO'],
+    ['field16', 'string', 'TRUE', '销售组织代码'],
+    ['field18', 'string', 'FALSE', 'PDID'],
+    ['field2', 'string', 'TRUE', '制令单号'],
+    ['field13', 'string', 'TRUE', '制令单别'],
+    ['field12', 'string', 'TRUE', '订单类型'],
+    ['field10', 'string', 'TRUE', '订单类别'],
+    ['field7', 'string', 'TRUE', '制表日期'],
+    ['date', 'string', 'TRUE', '期望交期'],
+    ['field6', 'string', 'TRUE', '订单数量'],
+    ['field24', 'string', 'FALSE', 'Return回货'],
+    ['field34', 'string', 'FALSE', 'WO Process'],
+  ]
+
+  // 调用函数
+  const jsonResult = convertTableToJsonWithComments(table, {
+    keyColumn: 0,
+    valueColumn: 1,
+    commentColumns: [2, 3],
+  })
+  console.log(jsonResult)
+
 </script>
 
 <template>
