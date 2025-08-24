@@ -3,23 +3,23 @@
   import type { Op } from 'jsondiffpatch/formatters/jsonpatch'
   import type { CoderExposes } from '@/components/coder/index.vue'
   import { json } from '@codemirror/lang-json'
+  import { EditorView } from '@codemirror/view'
   import { useClipboard } from '@vueuse/core'
   import { findNodeAtLocation, parse, parseTree } from 'jsonc-parser'
   import * as jsondiffpatch from 'jsondiffpatch'
   import * as jsonPatchFormater from 'jsondiffpatch/formatters/jsonpatch'
   import { ref } from 'vue'
-  import { clearMarks, mark } from '@/components/coder/utils/markFile'
+  import { clearAllMarks, mark, markField } from '@/components/coder/utils/mark'
   import { useMsg } from '@/uses/useMsg'
   import { sortObject } from '@/utils/sortObj'
-import { EditorView } from '@codemirror/view'
 
   const { msg, setMsg, isShow, showMsg } = useMsg()
   const { copy } = useClipboard()
 
   const EditorL = ref<CoderExposes>(null as any)
   const EditorR = ref<CoderExposes>(null as any)
-  const docL = ref('')
-  const docR = ref('')
+  const docL = ref('1111')
+  const docR = ref('1111')
 
   interface DiffNode {
     op: string
@@ -113,8 +113,8 @@ import { EditorView } from '@codemirror/view'
   }
 
   function markDiff () {
-    clearMarks(EditorL.value.view)
-    clearMarks(EditorR.value.view)
+    clearAllMarks(EditorL.value.view)
+    clearAllMarks(EditorR.value.view)
     const mlistL = loadMarkList(docL.value, docR.value)
     const mlistR = loadMarkList(docR.value, docL.value)
     for (const m of mlistL) {
@@ -158,7 +158,6 @@ import { EditorView } from '@codemirror/view'
   }
 
   onMounted(() => {
-    // 注册样式
     const markCssExtension = EditorView.baseTheme(
       {
         '.cm-marked-remove': {
@@ -178,6 +177,7 @@ import { EditorView } from '@codemirror/view'
     EditorR.value.addExtensions(
       [markCssExtension],
     )
+    // mark(EditorL.value.view, 0, 3, 'cm-diff-remove')
   })
 </script>
 
@@ -200,14 +200,14 @@ import { EditorView } from '@codemirror/view'
           <!-- 左侧 -->
           <v-col cols="6 pa-0 pr-1 h-100 overflow-y-auto overflow-x-hidden">
             <v-sheet>
-              <Coder ref="EditorL" v-model="docL" :language="json()" />
+              <Coder ref="EditorL" v-model="docL" :extensions="[markField]" :language="json()" />
             </v-sheet>
           </v-col>
 
           <!-- 右侧 -->
           <v-col cols="6 pa-0 pl-1 h-100 overflow-y-auto overflow-x-hidden">
             <v-sheet>
-              <Coder ref="EditorR" v-model="docR" :language="json()" />
+              <Coder ref="EditorR" v-model="docR" :extensions="[markField]" :language="json()" />
             </v-sheet>
           </v-col>
         </v-row>

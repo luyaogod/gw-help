@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { sql } from '@codemirror/lang-sql'
   import { useClipboard } from '@vueuse/core'
   import { computed, ref } from 'vue'
   import { useMsg } from '@/uses/useMsg'
@@ -17,7 +18,7 @@
 
   const row = ref('')
 
-  const sql = computed(() => {
+  const sqlCode = computed(() => {
     return formatToSQLIn(row.value)
   })
 
@@ -34,7 +35,7 @@
       <v-btn @click="clear()">清除</v-btn>
     </template>
     <template #tool-append>
-      <v-btn @click="()=>{copy(sql); setMsg('复制成功'); showMsg()}">复制</v-btn>
+      <v-btn @click="()=>{copy(sqlCode); setMsg('复制成功'); showMsg()}">复制</v-btn>
     </template>
     <template #page-content>
       <v-container class="pa-0 mt-1" fluid height="100%">
@@ -42,14 +43,14 @@
           <!-- 左侧 -->
           <v-col class="pa-0 pr-1 h-100 overflow-y-auto overflow-x-hidden" cols="6">
             <v-sheet>
-              <CodeMirror v-model="row" />
+              <Coder v-model="row" />
             </v-sheet>
           </v-col>
 
           <!-- 右侧 -->
           <v-col class="pa-0 pl-1 h-100 overflow-y-auto overflow-x-hidden" cols="6">
             <v-sheet>
-              <CodeMirror v-model="sql" language="sql" />
+              <Coder v-model="sqlCode" :language="sql()" />
             </v-sheet>
 
           </v-col>
